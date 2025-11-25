@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GLB Model Viewer</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></scripthttps://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsLoader.js</script>
+<script>
+  // Scene setup
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({antialias: true});
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Lighting
+  const light = new THREE.HemisphereLight(0xffffff, 0x444444);
+  light.position.set(0, 20, 0);
+  scene.add(light);
+
+  // Load GLB model
+  const loader = new THREE.GLTFLoader();
+  loader.load('model.glb', function(gltf) {
+    scene.add(gltf.scene);
+    camera.position.z = 2;
+    animate();
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+</script>
+</body>
+</html>
