@@ -1,0 +1,50 @@
+import SwiftUI
+import RealityKit
+import ARKit
+
+struct ContentView: View {
+    var body: some View {
+        ARViewContainer().edgesIgnoringSafeArea(.all)
+    }
+}
+
+struct ARViewContainer: UIViewRepresentable {
+    func makeUIView(context: Context) -> ARView {
+        let arView = ARView(frame: .zero)
+        
+        // Configure AR session
+        let config = ARWorldTrackingConfiguration()
+        config.environmentTexturing = .automatic
+        arView.session.run(config)
+        
+        // ✅ Load the USDZ model correctly
+        if let entity = try? Entity.load(named: "rowing_machine"), // <-- Ensure this matches your file name
+           let modelEntity = entity as? ModelEntity {
+            
+            // Scale the model for visibility
+            modelEntity.scale = SIMD3<Float>(0.5, 0.5, 0.5)
+            
+            // Add collision shapes for gestures
+            modelEntity.generateCollisionShapes(recursive: true)
+            
+            // Place the model in front of the camera
+            let cameraTransform = arView.cameraTransform
+            let anchorEntity = AnchorEntity(world: cameraTransform.matrix)
+            modelEntity.position = SIMD3<Float>(0, 0, -0.5) // 0.5 meters forward
+            anchorEntity.addChild(modelEntity)
+            
+            arView.scene.addAnchor(anchorEntity)
+            
+            // Enable gestures
+            arView.installGestures([.rotation, .scale, .translation], for: modelEntity)
+            
+            print("✅ Model placed in front of the camera")
+        } else {
+            print("❌ Failed to load or cast model entity. Check file name and target membership.")
+        }
+        
+        return arView
+    }
+    
+    func updateUIView(_ uiView: ARView, context: Context) {}
+}
