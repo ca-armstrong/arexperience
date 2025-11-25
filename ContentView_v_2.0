@@ -16,6 +16,8 @@ struct ARViewContainer: UIViewRepresentable {
         let config = ARWorldTrackingConfiguration()
         config.environmentTexturing = .automatic
         arView.session.run(config)
+
+print(Bundle.main.paths(forResourcesOfType: "usdz", inDirectory: nil))
         
         // ✅ Load the USDZ model correctly
         if let entity = try? Entity.load(named: "rowing_machine"), // <-- Ensure this matches your file name
